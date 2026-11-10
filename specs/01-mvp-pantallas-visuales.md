@@ -1,6 +1,6 @@
 # SPEC 01 — MVP visual: pantallas del vault
 
-> **Status:** Aprobado
+> **Status:** Implementado
 > **Depends on:** —
 > **Date:** 2026-11-10
 > **Objective:** Portar a Next.js App Router las cinco pantallas de `references/templates/` (biblioteca, detalle, reproductor, acceso y salón de la fama) con datos mock y sin ningún juego real.
