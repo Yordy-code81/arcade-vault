@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Courier_Prime, JetBrains_Mono, Press_Start_2P } from "next/font/google";
+import { Footer } from "@/components/footer";
+import { Nav } from "@/components/nav";
 import "./globals.css";
 
 const pressStart = Press_Start_2P({
@@ -35,7 +37,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Fixed backdrop layers: perspective grid + scanlines, and film noise */}
         <div className="av-bg" aria-hidden="true" />
         <div className="av-noise" aria-hidden="true" />
-        <div className="av-app">{children}</div>
+        <div className="av-app">
+          <Nav />
+          <main className="av-main">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
