@@ -1,7 +1,7 @@
 /* ===== ARCADE VAULT — global theme =====
    Port of references/templates/styles.css. Keep the two in sync visually.
-   Fonts are loaded with next/font in app/layout.tsx and exposed as
-   --font-press-start, --font-jetbrains-mono and --font-courier-prime. */
+   Fonts are loaded with next/font in app/layout.tsx (it declares the @font-face
+   rules); --pixel / --mono below reference those families by name. */
 @import "tailwindcss";
 
 :root {
@@ -20,8 +20,13 @@
   --bronze: #d97a3a;
   --line: rgba(0, 245, 255, 0.18);
   --line-2: rgba(255, 255, 255, 0.06);
-  --pixel: var(--font-press-start), system-ui, monospace;
-  --mono: var(--font-jetbrains-mono), var(--font-courier-prime), "Courier New", monospace;
+  /* Family names are written out (same stack as the template) instead of using
+     var(--font-press-start) etc.: those variables append next/font's metric
+     fallback ("… Fallback" = Arial with size-adjust), which renders glyphs the
+     pixel font lacks (≡ ▾ ▶ ★ ♥) larger than in the template. The @font-face
+     rules still come from next/font in app/layout.tsx. */
+  --pixel: "Press Start 2P", system-ui, monospace;
+  --mono: "JetBrains Mono", "Courier Prime", "Courier New", monospace;
 }
 
 /* Expose the theme to Tailwind utilities: bg-bg-2, text-cyan, border-line, font-pixel, font-mono… */
