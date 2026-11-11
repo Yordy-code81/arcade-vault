@@ -1,82 +1,86 @@
-// Mock session stored in localStorage["av_user"].
+// Session store backed by Supabase Auth + public.profiles.
 // Client-only: import it only from "use client" components.
+//
+// Login/logout run as Server Actions (app/login/actions.ts) that write the
+// auth cookies on the server; the browser client does not notice on its own,
+// so callers must `await syncSession()` after each action.
 import { useSyncExternalStore } from "react";
+import type { User } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 
 export interface SessionUser {
-  name: string; // UPPERCASE, max. 10 characters
+  id: string; // auth.users.id
+  name: string; // profiles.username (UPPERCASE, 3–10, A-Z 0-9 _)
 }
 
-const KEY = "av_user";
-const EVENT = "av:session";
+let supabase: ReturnType<typeof createClient> | null = null;
+let current: SessionUser | null = null;
+let started = false;
+let loadSeq = 0; // ignores results of stale, overlapping loads
+const listeners = new Set<() => void>();
 
-// Cache keyed by the raw string so getSnapshot returns a stable reference.
-let cachedRaw: string | null = null;
-let cachedUser: SessionUser | null = null;
+function client() {
+  supabase ??= createClient();
+  return supabase;
+}
 
-function readRaw(): string | null {
-  try {
-    return localStorage.getItem(KEY);
-  } catch {
-    return null;
+function setCurrent(next: SessionUser | null) {
+  // Keep the same reference when nothing changed so subscribers don't re-render.
+  if (current?.id === next?.id && current?.name === next?.name) return;
+  current = next;
+  listeners.forEach((listener) => listener());
+}
+
+async function load(user: User | null): Promise<void> {
+  const seq = ++loadSeq;
+  let next: SessionUser | null = null;
+  if (user) {
+    const { data } = await client()
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (data) next = { id: user.id, name: data.username };
   }
+  if (seq === loadSeq) setCurrent(next);
+}
+
+function start() {
+  if (started) return;
+  started = true;
+  // Fires INITIAL_SESSION on subscribe, then on changes from other tabs or token expiry.
+  client().auth.onAuthStateChange((_event, session) => {
+    // Defer: calling other Supabase methods inside this callback can deadlock.
+    setTimeout(() => void load(session?.user ?? null), 0);
+  });
+}
+
+function subscribe(onChange: () => void): () => void {
+  listeners.add(onChange);
+  start();
+  return () => listeners.delete(onChange);
 }
 
 function getSnapshot(): SessionUser | null {
-  const raw = readRaw();
-  if (raw !== cachedRaw) {
-    cachedRaw = raw;
-    try {
-      const parsed: unknown = raw ? JSON.parse(raw) : null;
-      cachedUser =
-        parsed && typeof (parsed as SessionUser).name === "string"
-          ? { name: (parsed as SessionUser).name }
-          : null;
-    } catch {
-      cachedUser = null;
-    }
-  }
-  return cachedUser;
+  return current;
 }
 
 function getServerSnapshot(): SessionUser | null {
   return null;
 }
 
-function subscribe(onChange: () => void): () => void {
-  const onStorage = (e: StorageEvent) => {
-    if (e.key === null || e.key === KEY) onChange();
-  };
-  window.addEventListener("storage", onStorage); // other tabs
-  window.addEventListener(EVENT, onChange); // this tab
-  return () => {
-    window.removeEventListener("storage", onStorage);
-    window.removeEventListener(EVENT, onChange);
-  };
-}
-
-function notify() {
-  window.dispatchEvent(new Event(EVENT));
-}
-
 export function useSession(): SessionUser | null {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
-export function signIn(user: SessionUser): void {
-  const name = user.name.toUpperCase().slice(0, 10);
+/** Re-reads the user and profile from Supabase and notifies subscribers. */
+export async function syncSession(): Promise<void> {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ name }));
+    const {
+      data: { user },
+    } = await client().auth.getUser();
+    await load(user);
   } catch {
-    // localStorage unavailable: session stays null.
+    await load(null);
   }
-  notify();
-}
-
-export function signOut(): void {
-  try {
-    localStorage.removeItem(KEY);
-  } catch {
-    // ignore
-  }
-  notify();
 }

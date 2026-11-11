@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { signOut, useSession } from "@/lib/session";
+import { signOutAction } from "@/app/login/actions";
+import { syncSession, useSession } from "@/lib/session";
 
 type Section = "biblioteca" | "salon" | "login";
 
@@ -22,6 +23,11 @@ export function Nav() {
   const cls = (s: Section) => (section === s ? "active" : undefined);
   const close = () => setOpen(false);
 
+  const signOut = async () => {
+    await signOutAction();
+    await syncSession();
+  };
+
   // Escape closes the mobile panel.
   useEffect(() => {
     if (!open) return;
@@ -35,7 +41,12 @@ export function Nav() {
   return (
     <>
       <nav className="av-nav">
-        <Link href="/" className="logo" onClick={close} aria-label="Arcade Vault, ir a la biblioteca">
+        <Link
+          href="/"
+          className="logo"
+          onClick={close}
+          aria-label="Arcade Vault, ir a la biblioteca"
+        >
           <div className="logo-mark" />
           <div className="logo-text neon-cyan">
             ARCADE <span className="neon-magenta">VAULT</span>
@@ -102,7 +113,9 @@ export function Nav() {
           {user ? "Cuenta" : "Iniciar Sesión"}
         </Link>
         <div className="flex-1" />
-        <div className="pixel text-[9px] tracking-[0.16em] text-ink-faint">CRÉDITOS · 03</div>
+        <div className="pixel text-[9px] tracking-[0.16em] text-ink-faint">
+          CRÉDITOS · 03
+        </div>
       </aside>
     </>
   );

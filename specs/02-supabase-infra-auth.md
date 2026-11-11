@@ -56,7 +56,7 @@ Integrar Supabase completo toca cuatro dominios (infra, auth, catálogo, puntuac
 
 ### Base de datos
 
-Migración `supabase/migrations/20261111000000_profiles.sql`:
+Migración `supabase/migrations/20261111202644_profiles.sql`:
 
 ```sql
 create table public.profiles (
@@ -146,7 +146,7 @@ Convenciones:
 proxy.ts                             (nuevo: llama a updateSession; matcher excluye estáticos)
 supabase/
   migrations/
-    20261111000000_profiles.sql      (nuevo)
+    20261111202644_profiles.sql      (nuevo)
 lib/
   supabase/
     client.ts                        (nuevo: createBrowserClient<Database>)
@@ -171,7 +171,7 @@ components/
 1. Instalar `@supabase/supabase-js` y `@supabase/ssr`. Crear `.env.example` y añadir `!.env.example` a `.gitignore`. Añadir los valores reales a `.env.local` (URL y publishable key con `get_project_url` / `get_publishable_keys` del MCP). Verificar con `npm run build`.
 2. Crear `lib/supabase/client.ts` y `lib/supabase/server.ts` siguiendo la guía de `@supabase/ssr` para App Router, sin tipar todavía. Verificar con `npm run build`.
 3. Crear `lib/supabase/proxy.ts` (`updateSession`) y `proxy.ts` en la raíz, consultando antes `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md`. El matcher excluye `_next/static`, `_next/image`, `favicon.ico` e imágenes. Prueba manual: `npm run dev`, todas las rutas de SPEC 01 siguen cargando.
-4. Escribir `supabase/migrations/20261111000000_profiles.sql` (tabla, RLS, política de lectura, función y trigger). Aplicarla al proyecto remoto con `apply_migration` del MCP usando el mismo nombre. Pasar `get_advisors` (security) y corregir avisos sobre `profiles` o `handle_new_user`.
+4. Escribir `supabase/migrations/20261111202644_profiles.sql` (tabla, RLS, política de lectura, función y trigger). Aplicarla al proyecto remoto con `apply_migration` del MCP usando el mismo nombre. Pasar `get_advisors` (security) y corregir avisos sobre `profiles` o `handle_new_user`.
 5. Generar `lib/supabase/database.types.ts` con `generate_typescript_types` y tipar los dos clientes con `<Database>`. Verificar con `npm run build`.
 6. Desactivar "Confirm email" en Authentication → Sign In / Providers → Email del dashboard de Supabase (paso manual del usuario).
 7. Crear `app/login/actions.ts` con `signInAction`, `signUpAction` y `signOutAction`, más la validación y los mensajes de la tabla. Verificar con `npm run build`.
@@ -186,7 +186,7 @@ components/
 - [ ] `npm run build` termina sin errores de tipos ni de prerender.
 - [ ] `npm run lint` termina sin errores.
 - [ ] `.env.example` está versionado con `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` sin valores; `.env.local` no está versionado.
-- [ ] `supabase/migrations/20261111000000_profiles.sql` existe y `list_migrations` del MCP la muestra aplicada en el proyecto remoto.
+- [ ] `supabase/migrations/20261111202644_profiles.sql` existe y `list_migrations` del MCP la muestra aplicada en el proyecto remoto.
 - [ ] `public.profiles` tiene RLS activado y `get_advisors` (security) no reporta avisos sobre `profiles` ni `handle_new_user`.
 - [ ] Todas las rutas de SPEC 01 cargan sin errores en la consola del navegador, con y sin sesión.
 - [ ] En `/login`, la pestaña INICIAR SESIÓN muestra solo Email y Contraseña; CREAR CUENTA muestra Usuario, Email y Contraseña.
