@@ -17,6 +17,48 @@ export type Database = {
   };
   public: {
     Tables: {
+      games: {
+        Row: {
+          best: number;
+          category: string;
+          color: string;
+          cover: string;
+          created_at: string;
+          id: string;
+          long_desc: string;
+          plays: string;
+          short_desc: string;
+          sort_order: number;
+          title: string;
+        };
+        Insert: {
+          best?: number;
+          category: string;
+          color: string;
+          cover: string;
+          created_at?: string;
+          id: string;
+          long_desc: string;
+          plays?: string;
+          short_desc: string;
+          sort_order: number;
+          title: string;
+        };
+        Update: {
+          best?: number;
+          category?: string;
+          color?: string;
+          cover?: string;
+          created_at?: string;
+          id?: string;
+          long_desc?: string;
+          plays?: string;
+          short_desc?: string;
+          sort_order?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;

@@ -2,18 +2,20 @@
 
 import { useMemo, useState } from "react";
 import { GameCard } from "@/components/game-card";
-import { CATEGORIES, GAMES, type CategoryFilter } from "@/lib/data";
+import { CATEGORIES, type CategoryFilter, type Game } from "@/lib/data";
 
-export function Library() {
+export function Library({ games }: { games: Game[] }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<CategoryFilter>("TODOS");
 
   const filtered = useMemo(() => {
     const needle = q.toLowerCase();
-    return GAMES.filter(
-      (g) => (cat === "TODOS" || g.cat === cat) && g.title.toLowerCase().includes(needle),
+    return games.filter(
+      (g) =>
+        (cat === "TODOS" || g.cat === cat) &&
+        g.title.toLowerCase().includes(needle),
     );
-  }, [q, cat]);
+  }, [games, q, cat]);
 
   return (
     <>
@@ -31,7 +33,11 @@ export function Library() {
             aria-label="Buscar un juego por nombre"
           />
         </div>
-        <div className="av-chips" role="group" aria-label="Filtrar por categoría">
+        <div
+          className="av-chips"
+          role="group"
+          aria-label="Filtrar por categoría"
+        >
           {CATEGORIES.map((c) => (
             <button
               key={c}
@@ -51,8 +57,13 @@ export function Library() {
           <GameCard key={g.id} game={g} />
         ))}
         {filtered.length === 0 && (
-          <div className="col-span-full p-20 text-center text-ink-faint" role="status">
-            <div className="pixel mb-3 text-sm text-magenta">NO HAY RESULTADOS</div>
+          <div
+            className="col-span-full p-20 text-center text-ink-faint"
+            role="status"
+          >
+            <div className="pixel mb-3 text-sm text-magenta">
+              NO HAY RESULTADOS
+            </div>
             <div>Intenta otra búsqueda o categoría.</div>
           </div>
         )}
