@@ -1,14 +1,17 @@
 import { notFound } from "next/navigation";
 import { GamePlayer } from "@/components/game-player";
-import { GAMES, getGame } from "@/lib/data";
+import { getGame, getGames } from "@/lib/games";
 
-export function generateStaticParams() {
-  return GAMES.map((g) => ({ id: g.id }));
+export async function generateStaticParams() {
+  const games = await getGames();
+  return games.map((g) => ({ id: g.id }));
 }
 
-export default async function GamePlayerPage({ params }: PageProps<"/juegos/[id]/jugar">) {
+export default async function GamePlayerPage({
+  params,
+}: PageProps<"/juegos/[id]/jugar">) {
   const { id } = await params;
-  const game = getGame(id);
+  const game = await getGame(id);
   if (!game) notFound();
 
   return <GamePlayer game={game} />;

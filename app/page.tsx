@@ -1,6 +1,9 @@
 import { Library } from "@/components/library";
+import { getGames } from "@/lib/games";
 
-export default function Home() {
+export default async function Home() {
+  const games = await getGames();
+
   return (
     <div className="fade-in">
       <section className="av-hero">
@@ -9,7 +12,7 @@ export default function Home() {
           INSERTA UNA MONEDA PARA JUGAR <span className="blink">_</span>
         </div>
       </section>
-      <Library />
+      <Library games={games} />
     </div>
   );
 }
