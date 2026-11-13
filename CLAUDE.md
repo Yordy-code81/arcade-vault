@@ -31,6 +31,7 @@ No test runner is configured yet.
 
 - **Hook:** `.claude/settings.json` runs `.claude/hooks/format-and-lint.mjs` after every Write/Edit: Prettier formats the file and ESLint lints JS/TS. Unfixable ESLint errors are sent back (exit 2) — fix them instead of ignoring them.
 - **MCP servers:** `.mcp.json` configures the **Supabase** MCP (bound to this project's ref) — use it for migrations (`apply_migration`), SQL, advisors, logs and `generate_typescript_types`. **Playwright** MCP is used to verify UI in the browser; its artifacts go to `.playwright-mcp/` (git-ignored).
+- **Subagent:** `game-planner` (`.claude/agents/game-planner.md`) — plans and decides which games fit the catalog. It has `memory: project`, so its memory of past suggestions lives in `.claude/agent-memory/game-planner/` (commit it).
 - **UI design:** always use the `/frontend-design` skill when designing user interfaces (Usa siempre /frontend-design para diseñar las interfaces de usuario).
 
 ## Stack and non-default configuration
