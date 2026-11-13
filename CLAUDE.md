@@ -33,6 +33,7 @@ No test runner is configured yet.
 - **MCP servers:** `.mcp.json` configures the **Supabase** MCP (bound to this project's ref) — use it for migrations (`apply_migration`), SQL, advisors, logs and `generate_typescript_types`. **Playwright** MCP is used to verify UI in the browser; its artifacts go to `.playwright-mcp/` (git-ignored).
 - **Subagent:** `game-planner` (`.claude/agents/game-planner.md`) — plans and decides which games fit the catalog. It has `memory: project`, so its memory of past suggestions lives in `.claude/agent-memory/game-planner/` (commit it).
 - **Subagent:** `game-jam` (`.claude/agents/game-jam.md`) — given a theme, writes the specs (design + implementation, at least two files) of one original game in `specs/game-jam/[game-id]/`. They are drafts to review; `/spec-impl` does not pick them up until promoted to `specs/NN-slug.md`.
+- **Subagent:** `skin-designer` (`.claude/agents/skin-designer.md`) — checks that every game has at least three skins (`clasico` default, `neon`, `retro`) and that each one meets the dark-mode contrast rules. It only writes specs in `specs/skins/` (shared contract `00-contrato-skins.md`, one `[game-id].md` per game, and the compliance matrix `README.md`). They are drafts; the skin system itself is not implemented in code yet.
 - **UI design:** always use the `/frontend-design` skill when designing user interfaces (Usa siempre /frontend-design para diseñar las interfaces de usuario).
 
 ## Stack and non-default configuration
